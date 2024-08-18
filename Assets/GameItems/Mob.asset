@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7089a110edbd5724780e8265a7b9ac4a, type: 3}
-  m_Name: TurretTest
+  m_Script: {fileID: 11500000, guid: 818cf0192ec5ef746bf477e006d33487, type: 3}
+  m_Name: Mob
   m_EditorClassIdentifier: 
-  c_name: Test
-  c_weight: 1
-  c_bulletPrefab: {fileID: 5893902701367014445, guid: 238fb5e3dc2fa324788302028a4105c6, type: 3}
-  c_dmg: 2
-  c_sprite: {fileID: 0}
+  mob_Name: Dumbass
+  GFX: {fileID: 0}
+  health: 10
+  dmg: 5

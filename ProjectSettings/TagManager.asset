@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Path
   - Bullet
+  - Cake
   layers:
   - Default
   - TransparentFX

@@ -7,17 +7,24 @@ public class MobBehaviour : MonoBehaviour
 {
     MobState state;
     GameObject wayPointsList;
+    [SerializeField] Mob m_Mob;
     [SerializeField] float speed;
     [SerializeField] float minDist;
     [SerializeField] float minMobDist;
+    [SerializeField] float minAttackDist;
     [SerializeField] LayerMask mask;
     Transform[] targetList;
     Transform currentTarget;
     Transform avoidThing;
     int targetIndex = 0;
+
+    int health;
+    int dmg;
     // Start is called before the first frame update
     void Start()
     {
+        health = m_Mob.health;
+        dmg = m_Mob.dmg;
         wayPointsList = GameObject.FindGameObjectWithTag(Tags.T_Path);
         targetList = wayPointsList.GetComponentsInChildren<Transform>();
         nextTarget();
@@ -41,6 +48,7 @@ public class MobBehaviour : MonoBehaviour
                 }
                 break;
             case MobState.Hitting:
+                StartCoroutine(GiveDamage());
                 break;
             case MobState.Avoiding:
                 if (Vector2.Distance(transform.position, avoidThing.position) > minMobDist) state = MobState.Moving;
@@ -64,6 +72,31 @@ public class MobBehaviour : MonoBehaviour
         if (collision.gameObject.CompareTag(Tags.T_Bullet)) 
         {
             Debug.Log("ouch");
+            LoseHealth(collision.gameObject.GetComponentInParent<ContraptionBehaviour>().Damage);
         } 
+    }
+
+    public void LoseHealth(int dmg) 
+    { 
+        health -= dmg;
+        if(health<=0) Destroy(gameObject);
+    }
+
+    IEnumerator GiveDamage() 
+    {
+        Collider2D collider = Physics2D.OverlapCircle(transform.position, minAttackDist);
+        if (collider.gameObject.CompareTag(Tags.T_Cake))
+        {
+            GameManager.Instance.LoseCakeHealth(dmg);
+        }
+        yield return new WaitForSeconds(2f);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, minAttackDist);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, minMobDist);
     }
 }

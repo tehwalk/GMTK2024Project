@@ -13,6 +13,7 @@ public class ContraptionBehaviour : MonoBehaviour
     [SerializeField] float bulletForce = 3;
     GameObject bulletPrefab;
     int damage;
+    public int Damage { get { return damage; } }
     int weight;
     // Start is called before the first frame update
     void Start()
@@ -27,26 +28,24 @@ public class ContraptionBehaviour : MonoBehaviour
         damage = c_Contraption.c_dmg;
         weight = c_Contraption.c_weight;
     }
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
-    void Shoot() 
+    void Shoot()
     {
         //find the enemy closest (inside range)
         //rotate the head towards it
         //shoot at that direction
+       // if (isHeld == true) return;
         Collider2D enemy = Physics2D.OverlapCircle(rangeCenter.position, radius, enemyMask);
-        if (enemy != null) 
+        if (enemy != null)
         {
             // shooter.LookAt(enemy.gameObject.transform, Vector3.forward);
             var dist = (shooter.position - enemy.transform.position).normalized;
             float rot_z = Mathf.Atan2(dist.y, dist.x) * Mathf.Rad2Deg;
             shooter.transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
             var bullet = Instantiate(bulletPrefab, shooter.transform.position, shooter.transform.rotation);
+            bullet.transform.SetParent(transform);
             bullet.GetComponent<Rigidbody2D>().AddForce(-shooter.transform.up * bulletForce, ForceMode2D.Impulse);
+            Destroy(bullet, 0.8f);
         }
     }
 
@@ -55,5 +54,10 @@ public class ContraptionBehaviour : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(rangeCenter.position, radius);
 
+    }
+
+    private void OnMouseDown()
+    {
+        Debug.Log("i am picked");
     }
 }

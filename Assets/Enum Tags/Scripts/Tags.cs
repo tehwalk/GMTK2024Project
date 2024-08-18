@@ -9,4 +9,5 @@ public const string T_Player = @"Player";
 public const string T_GameController = @"GameController";
 public const string T_Path = @"Path";
 public const string T_Bullet = @"Bullet";
+public const string T_Cake = @"Cake";
 }

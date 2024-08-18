@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum ContraptionType { Turret, Trap }
-[CreateAssetMenu(fileName ="Contraption", menuName ="GameItems")]
+[CreateAssetMenu(fileName ="Contraption", menuName ="GameItems/Contraption")]
 public class Contraption : ScriptableObject
 {
     public string c_name;

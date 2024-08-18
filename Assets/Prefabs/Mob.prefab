@@ -46,9 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97d22b179d0ece348ad8b767f268ad8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Mob: {fileID: 11400000, guid: d8d7123ff0323304abeadf253dd6c0df, type: 2}
   speed: 1
   minDist: 0.1
-  minMobDist: 0.2
+  minMobDist: 0.87
+  minAttackDist: 1.04
   mask:
     serializedVersion: 2
     m_Bits: 64
