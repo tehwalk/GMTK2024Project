@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI timerText;
     [SerializeField] Slider cakeHealthSlider;
     int cakeHealth;
-    int lvl = 1;
     float timer = 0;
     private void Awake()
     {

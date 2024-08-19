@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.AI;
 
 public enum MobState { Moving, Hitting, Avoiding }
 public class MobBehaviour : MonoBehaviour
 {
     MobState state;
     GameObject wayPointsList;
+    NavMeshAgent agent;
     [Header("General Settings")]
     [SerializeField] Mob m_Mob;
     [SerializeField] float speed;
@@ -27,6 +29,7 @@ public class MobBehaviour : MonoBehaviour
     float attackTimer = 0;
     int health;
     int dmg;
+    int exp;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +38,11 @@ public class MobBehaviour : MonoBehaviour
         healthSlider.maxValue = m_Mob.health;
         healthSlider.value = health;
         dmg = m_Mob.dmg;
+        exp = m_Mob.expGain;
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+        agent.speed = speed;
         wayPointsList = GameObject.FindGameObjectWithTag(Tags.T_Path);
         targetList = wayPointsList.GetComponentsInChildren<Transform>();
         nextTarget();
@@ -48,23 +56,14 @@ public class MobBehaviour : MonoBehaviour
         switch (state)
         {
             case MobState.Moving:
-                if (Vector2.Distance(transform.position, currentTarget.position) < minDist) nextTarget();
-                transform.position = Vector2.MoveTowards(transform.position, currentTarget.position, Time.deltaTime * speed);
-                Collider2D collider = Physics2D.OverlapCircle(transform.position, minMobDist, mask);
-                if (collider != null && collider !=this.GetComponent<Collider2D>())
-                {
-                    avoidThing = collider.gameObject.transform;
-                    state = MobState.Avoiding;
-                    avoidanceTarget = RotateVector(transform.position - avoidThing.position,90f*Mathf.Deg2Rad);
-                }
+                if (agent.remainingDistance<=minDist) nextTarget();
+               // transform.position = Vector2.MoveTowards(transform.position, currentTarget.position, Time.deltaTime * speed);
+                
                 break;
             case MobState.Hitting:
                 GiveDamage();
                 break;
-            case MobState.Avoiding:
-                if (Vector2.Distance(transform.position, avoidThing.position) > minMobDist) state = MobState.Moving;
-                transform.position = Vector2.MoveTowards(transform.position, avoidanceTarget, Time.deltaTime * speed);
-                break;
+          
         }
     }
 
@@ -75,7 +74,7 @@ public class MobBehaviour : MonoBehaviour
         {
             state = MobState.Hitting;
         }
-        else currentTarget = targetList[targetIndex];
+        else agent.SetDestination(targetList[targetIndex].position);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -91,7 +90,11 @@ public class MobBehaviour : MonoBehaviour
     { 
         health -= dmg;
         healthSlider.value = health;
-        if(health<=0) Destroy(gameObject);
+        if (health <= 0)
+        {
+            LevelManager.Instance.GainExp(exp);
+            Destroy(gameObject); 
+        }
     }
 
     void GiveDamage() 
@@ -121,11 +124,5 @@ public class MobBehaviour : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, minMobDist);
     }
 
-    public static Vector2 RotateVector(Vector2 v, float delta)
-    {
-        return new Vector2(
-            v.x * Mathf.Cos(delta) - v.y * Mathf.Sin(delta),
-            v.x * Mathf.Sin(delta) + v.y * Mathf.Cos(delta)
-        );
-    }
+  
 }
