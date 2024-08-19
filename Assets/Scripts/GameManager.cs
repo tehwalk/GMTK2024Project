@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using System;
 
 public enum GameState { Playing, Paused, Won, Lost }
 public class GameManager : MonoBehaviour
@@ -15,6 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] int MaxHealth;
     [Header("UI Properties")]
     [SerializeField] TextMeshProUGUI timerText;
+    [SerializeField] Slider cakeHealthSlider;
     int cakeHealth;
     int lvl = 1;
     float timer = 0;
@@ -28,6 +31,9 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         cakeHealth = CakeHealthMax;
+        cakeHealthSlider.minValue = 0;
+        cakeHealthSlider.maxValue = CakeHealthMax;
+        cakeHealthSlider.value = cakeHealth;
         timer = TimerMax;
     }
 
@@ -58,7 +64,9 @@ public class GameManager : MonoBehaviour
     void ReduceTime()
     {
         timer -= Time.deltaTime;
-        timerText.text = timer.ToString();
+        float minutes = Mathf.FloorToInt(timer / 60);
+        float seconds = Mathf.FloorToInt(timer % 60);
+        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         if (timer <= 0)
         {
             state = GameState.Lost;
@@ -68,6 +76,7 @@ public class GameManager : MonoBehaviour
     public void LoseCakeHealth(int dmg)
     {
         cakeHealth -= dmg;
+        cakeHealthSlider.value = cakeHealth;
         if (cakeHealth <= 0) Debug.Log("the cake is a lie");
     }
 }

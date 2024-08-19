@@ -6,15 +6,19 @@ public enum ContraptionState { PlacePending, PlaceFound, Placed }
 public class ContraptionBehaviour : MonoBehaviour
 {
     ContraptionState state;
+    public ContraptionState State { get { return state; } }
     [SerializeField] Contraption c_Contraption;
     public Contraption Contraption { get { return c_Contraption; } set { c_Contraption = value; } }
+    ContraptionManager contraptionManager;
     [SerializeField] float c_Interval;
     [SerializeField] LayerMask enemyMask;
     [SerializeField] float radius;
     [SerializeField] Transform shooter;
     [SerializeField] Transform rangeCenter;
+    [SerializeField] Transform standPoint;
     [SerializeField] float bulletForce = 3;
     GameObject bulletPrefab;
+    GameObject hole = null;
     int damage;
     public int Damage { get { return damage; } }
     int weight;
@@ -41,14 +45,27 @@ public class ContraptionBehaviour : MonoBehaviour
         switch (state) 
         {
             case ContraptionState.PlacePending:
+                if (Input.GetMouseButtonDown(1))
+                {
+                    ContraptionManager.Instance.RemoveContraption(this);
+                    Destroy(gameObject);
+                }
                 transform.position = mousePos;
                 break;
             case ContraptionState.PlaceFound:
+                
                 if (Input.GetMouseButtonDown(0))
                 {
+                    transform.position = hole.transform.position + new Vector3(0,Mathf.Abs(standPoint.localPosition.y),0);
+                    ContraptionManager.Instance.SetContraption();
                     state = ContraptionState.Placed; 
                 }
-                transform.position = mousePos;
+                else if (Input.GetMouseButtonDown(1)) 
+                {
+                    ContraptionManager.Instance.RemoveContraption(this);
+                    Destroy(gameObject);
+                }
+                else transform.position = mousePos;
                 break;
             case ContraptionState.Placed:
                 Shoot();
@@ -94,18 +111,22 @@ public class ContraptionBehaviour : MonoBehaviour
     {
         if (collision.gameObject.CompareTag(Tags.T_Hole)) 
         {
-            //Debug.Log("can be placed");
+            hole = collision.gameObject;
             state = ContraptionState.PlaceFound;
+           
+            //Debug.Log("can be placed");
+            
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
 
-        if (collision.gameObject.CompareTag(Tags.T_Hole))
+        if (collision.gameObject.CompareTag(Tags.T_Hole) && state==ContraptionState.PlaceFound)
         {
-            //Debug.Log("can't be placed");
             state = ContraptionState.PlacePending;
+           
+            //Debug.Log("can't be placed");
         }
     }
 }

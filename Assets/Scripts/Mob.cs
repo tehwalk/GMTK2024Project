@@ -9,4 +9,5 @@ public class Mob : ScriptableObject
     public GameObject GFX;
     public int health;
     public int dmg;
+    public int expGain;
 }
