@@ -8,7 +8,10 @@ public class ContraptionManager : MonoBehaviour
     private static ContraptionManager instance;
     public static ContraptionManager Instance {  get { return instance; } }
     int weightSum = 0;
+   
     [SerializeField] int weightLimitStart;
+    int weightLimit = 0;
+    public int WeightLimit { get { return weightLimit; } set { weightLimit = value; } }
     List<ContraptionBehaviour> pickedContraptions = new List<ContraptionBehaviour>();
     [SerializeField] TextMeshProUGUI weightText;
     [SerializeField] GameObject contraptionPrefab;
@@ -21,6 +24,7 @@ public class ContraptionManager : MonoBehaviour
     }
     void Start()
     {
+        weightLimit = weightLimitStart;
         UpdateUI();
     }
 
@@ -32,7 +36,7 @@ public class ContraptionManager : MonoBehaviour
 
     public void PickContraption(Contraption con)
     {
-        if (weightSum + con.c_weight <= weightLimitStart && pendingContaption == null) 
+        if (weightSum + con.c_weight <= weightLimit && pendingContaption == null) 
         { 
             //go pick a position
             //instantiate prefab and put turret
@@ -68,9 +72,9 @@ public class ContraptionManager : MonoBehaviour
         UpdateUI() ;
     }
 
-    void UpdateUI()
+    public void UpdateUI()
     {
         weightSum = ReturnWeightSum();
-        weightText.text = weightSum.ToString() + "/" + weightLimitStart.ToString();
+        weightText.text = weightSum.ToString() + "/" + weightLimit.ToString();
     }
 }
